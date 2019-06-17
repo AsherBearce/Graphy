@@ -28,3 +28,6 @@ So, while I probably won't be able to include a few of the things I've listed, I
 valued functions, integrals and derivatives. Another idea that I may include later on, is parsing LaTeX from the input. This would 
 definitely increase the usability for what I'm assuming would be most of the users of my app. I'd also like to include some user 
 interface that allows you to look at various sections of the graph, most likely by scrolling your finger across the screen. 
+
+### Entity relationship diagram
+![](docs\ERDVersion1.png)
