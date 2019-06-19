@@ -30,4 +30,4 @@ definitely increase the usability for what I'm assuming would be most of the use
 interface that allows you to look at various sections of the graph, most likely by scrolling your finger across the screen. 
 
 ### Entity relationship diagram
-![](docs\ERDVersion1.png)
+[Entity relationship diagrams](docs/ERD.md)
