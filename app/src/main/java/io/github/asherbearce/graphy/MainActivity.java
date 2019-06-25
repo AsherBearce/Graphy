@@ -7,16 +7,16 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
+import androidx.core.view.GestureDetectorCompat;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,8 +25,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import io.github.asherbearce.graphy.view.InputAdapter;
 import java.util.LinkedList;
 import java.util.List;
+import io.github.asherbearce.graphy.view.GraphViewWindow;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,7 +37,9 @@ public class MainActivity extends AppCompatActivity
   ListView inputView;
   ImageView graphDisplay;
   ImageButton addInputButton;
-  Drawable graphImage;
+  GraphViewWindow graphImage;
+  GestureDetectorCompat scrollDetect;
+  InputAdapter adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +51,22 @@ public class MainActivity extends AppCompatActivity
     inputView = findViewById(R.id.input_list);
     graphDisplay = findViewById(R.id.graph_display);
     addInputButton = findViewById(R.id.add_input_button);
-    graphImage = new GraphViewer();
+    graphImage = new GraphViewWindow();
+    scrollDetect = new GestureDetectorCompat(this, new ScrollListener());
+    adapter = new InputAdapter(this, inputs);
 
     graphDisplay.getViewTreeObserver().addOnGlobalLayoutListener(
         new OnGlobalLayoutListener() {
           @Override
           public void onGlobalLayout() {
-            ((GraphViewer) graphImage).setWidth(graphDisplay.getWidth());
-            ((GraphViewer) graphImage).setHeight(graphDisplay.getHeight());
+            graphImage.setWidth(graphDisplay.getWidth());
+            graphImage.setHeight(graphDisplay.getHeight());
           }
         }
     );
 
     graphDisplay.setImageDrawable(graphImage);
-
+    inputView.setAdapter(adapter);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
@@ -73,14 +79,26 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-
-
     addInputButton.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v){
-        //TODO Update list view
+        //TODO Instead of string, use an object. The issue comes from the string not being unique
+        inputs.add("Hello, world!");
+        //inputView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
       }
     });
+
+
   }
+
+  public void updateInputList(){
+    InputAdapter adapter = new InputAdapter(this, inputs);
+    inputView.setAdapter(adapter);
+  }
+
+  /*public boolean onTouch(View view, MotionEvent event){
+    return scrollDetect.onTouchEvent(event);
+  }*/
 
   @Override
   public void onBackPressed() {
@@ -139,43 +157,14 @@ public class MainActivity extends AppCompatActivity
     return true;
   }
 
-  private class GraphViewer extends Drawable{
-    private int height;
-    private int width;
+  private class ScrollListener extends GestureDetector.SimpleOnGestureListener{
 
-    public void setHeight(int height){
-      this.height = height;
-      invalidateSelf();
-    }
+    public boolean onDown(MotionEvent evt){
+      graphImage.setOffsetX((int)evt.getX());
+      graphImage.setOffsetY((int)evt.getY());
+      //graphImage.invalidateSelf();
 
-    public void setWidth(int width){
-      this.width = width;
-      invalidateSelf();
-    }
-
-    @Override
-    public void draw(Canvas canvas){
-      //For debugging purposes, I'll just draw a simple sine wave.
-      Paint paint = new Paint();
-      paint.setColor(Color.BLUE);
-      paint.setStrokeWidth(3);
-      canvas.drawLine(0, 0, width, height, paint);
-      canvas.drawLine(width, 0, 0, height, paint);
-    }
-
-    @Override
-    public void setAlpha(int alpha){
-
-    }
-
-    @Override
-    public void setColorFilter(@Nullable ColorFilter colorFilter) {
-
-    }
-
-    @Override
-    public int getOpacity() {
-      return PixelFormat.OPAQUE;
+      return true;
     }
   }
 }
