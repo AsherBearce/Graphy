@@ -82,6 +82,10 @@ public class Method implements Callable {
   private NumberValue computeAtom() throws ParseException{
     NumberValue result;
 
+    if (currentToken.value.getTokenType() == TokenTypes.END){
+      throw new ParseException("Empty expression");
+    }
+
     if (currentToken.value.getTokenType() == TokenTypes.NUMBER){
       result = ((NumberToken)currentToken.value).getValue();
       nextToken();
@@ -180,7 +184,7 @@ public class Method implements Callable {
   }
 
   public static NumberValue computeConstant(LinkedList<Token> constTokens, ComputeEnvironment env) throws ParseException{
-    Method tempMethod = new Method("", constTokens, 0, env, null);
+    Method tempMethod = new Method("", constTokens, 0, env, new HashMap<>());
     NumberValue result = tempMethod.computeExpression(0);
     tempMethod = null;
     return result;

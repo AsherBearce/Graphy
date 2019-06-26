@@ -9,6 +9,8 @@ import io.github.asherbearce.graphy.parser.token.TokenTypes;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+
+
 public class ComputeEnvironment {
   private TokenList.TokenContainer currentToken;
   private TokenList tokens;
@@ -17,8 +19,6 @@ public class ComputeEnvironment {
   public static HashMap<String, BuiltInMethods> builtIn;
 
   public ComputeEnvironment(){
-    //this.tokens = new TokenList(tokens);
-    //currentToken = this.tokens.getFirst();
     functions = new HashMap<>();
     variables = new HashMap<>();
 
@@ -70,95 +70,111 @@ public class ComputeEnvironment {
     return result;
   }
 
+  public void remove(String identifier){
+    if (functions.containsKey(identifier)){
+      functions.remove(identifier);
+    }
+    else if (variables.containsKey(identifier)){
+      variables.remove(identifier);
+    }
+  }
+
   public void clearContent(){
     functions.clear();
     variables.clear();
   }
 
-  public void parseStatement(LinkedList<Token> tokenList) throws ParseException {
-    tokens = new TokenList(tokenList);
-    currentToken = tokens.getFirst();
+  public String parseStatement(LinkedList<Token> tokenList) throws ParseException {
+    String result = "";
 
-    if (currentToken.value.getTokenType() == TokenTypes.IDENTIFIER){
-      String identifierName = ((IdentifierToken) currentToken.value).getValue();
+    if (tokens == null) {
+      tokens = new TokenList(tokenList);
+      currentToken = tokens.getFirst();
 
-      if (functions.containsKey(identifierName) || variables.containsKey(identifierName)){
-        //Do a compute expression, put it into a new anonymous variable.
-        NumberValue newVar = Method.computeConstant(tokens.tokenLinkedList(), this);
-        String anonymousName = String.format("$%d", variables.size());
 
-        variables.put(anonymousName, newVar);
-      }
-      else{
-        //Other wise, we're declaring either a new variable or function.
-        nextToken();
-        if (currentToken.value.getTokenType() == TokenTypes.OPEN_PAREN){
-          //Define a new function
+      if (currentToken.value.getTokenType() == TokenTypes.IDENTIFIER) {
+        String identifierName = ((IdentifierToken) currentToken.value).getValue();
+
+        if (functions.containsKey(identifierName) || variables.containsKey(identifierName)) {
+          //Do a compute expression, put it into a new anonymous variable.
+          NumberValue newVar = Method.computeConstant(tokens.tokenLinkedList(), this);
+          String anonymousName = String.format("$%d", variables.size());
+          result = anonymousName;
+
+          variables.put(anonymousName, newVar);
+        } else {
+          //Other wise, we're declaring either a new variable or function.
+          result = identifierName;
           nextToken();
-          HashMap<String, Integer> parameters = new HashMap<>();
-          int paramNumber = 0;
+          if (currentToken.value.getTokenType() == TokenTypes.OPEN_PAREN) {
+            //Define a new function
+            nextToken();
+            HashMap<String, Integer> parameters = new HashMap<>();
+            int paramNumber = 0;
 
-          while (currentToken.value.getTokenType() == TokenTypes.IDENTIFIER){
-            String varName = ((IdentifierToken) currentToken.value).getValue();
+            while (currentToken.value.getTokenType() == TokenTypes.IDENTIFIER) {
+              String varName = ((IdentifierToken) currentToken.value).getValue();
 
-            parameters.put(varName, paramNumber);
+              parameters.put(varName, paramNumber);
+              nextToken();
+
+              if (currentToken.value.getTokenType() == TokenTypes.COMMA) {
+                nextToken();
+              }
+
+              paramNumber++;
+            }
+
+            expectToken(TokenTypes.CLOSE_PAREN);
+            nextToken();
+            expectToken(TokenTypes.EQUALS);
+            nextToken();
+            //make a new token list starting from currentToken to the end of the list of tokens.
+            LinkedList<Token> toks = new LinkedList<>();
+
+            while (currentToken.value.getTokenType() != TokenTypes.END) {
+              toks.addLast(currentToken.value);
+              nextToken();
+            }
+            toks.addLast(TokenTypes.END);
+
+            Method func = new Method(identifierName, toks, paramNumber, this, parameters);
+            functions.put(identifierName, func);
+          } else {
+            //Define a new variable
+            expectToken(TokenTypes.EQUALS);
             nextToken();
 
-            if (currentToken.value.getTokenType() == TokenTypes.COMMA){
+            LinkedList<Token> toks = new LinkedList<>();
+
+            while (currentToken.value != TokenTypes.END) {
+              toks.addLast(currentToken.value);
               nextToken();
             }
 
-            paramNumber++;
+            toks.addLast(TokenTypes.END);
+
+            NumberValue newVar = Method.computeConstant(toks, this);
+            String anonymousName = String.format(identifierName, variables.size());
+
+            variables.put(anonymousName, newVar);
           }
-
-          expectToken(TokenTypes.CLOSE_PAREN);
-          nextToken();
-          expectToken(TokenTypes.EQUALS);
-          nextToken();
-          //make a new token list starting from currentToken to the end of the list of tokens.
-          LinkedList<Token> toks = new LinkedList<>();
-
-          while (currentToken.value.getTokenType() != TokenTypes.END){
-            toks.addLast(currentToken.value);
-            nextToken();
-          }
-          toks.addLast(TokenTypes.END);
-
-          Method func = new Method(identifierName, toks, paramNumber, this, parameters);
-          functions.put(identifierName, func);
         }
-        else{
-          //Define a new variable
-          expectToken(TokenTypes.EQUALS);
-          nextToken();
 
-          LinkedList<Token> toks = new LinkedList<>();
+      } else {
+        //Do the same thing as we did for declaring a new variable but give it an anonymous name such as $a
 
-          while (currentToken.value != TokenTypes.END){
-            toks.addLast(currentToken.value);
-            nextToken();
-          }
+        NumberValue newVar = Method.computeConstant(tokens.tokenLinkedList(), this);
+        String anonymousName = String.format("$%d", variables.size());
+        result = anonymousName;
 
-          toks.addLast(TokenTypes.END);
-
-          NumberValue newVar = Method.computeConstant(toks, this);
-          String anonymousName = String.format(identifierName, variables.size());
-
-          variables.put(anonymousName, newVar);
-        }
+        variables.put(anonymousName, newVar);
       }
 
-    }
-    else{
-      //Do the same thing as we did for declaring a new variable but give it an anonymous name such as $a
-
-      NumberValue newVar = Method.computeConstant(tokens.tokenLinkedList(), this);
-      String anonymousName = String.format("$%d", variables.size());
-
-      variables.put(anonymousName, newVar);
+      tokens = null;
+      currentToken = null;
     }
 
-    tokens = null;
-    currentToken = null;
+    return result;
   }
 }

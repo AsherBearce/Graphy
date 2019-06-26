@@ -5,8 +5,8 @@ import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.math.NumberValue;
 
 public enum BuiltInMethods implements Callable {
-  LOG((NumberValue... args) -> cos(args[0]), 1),
-  LOG_10((NumberValue... args) ->  log10(args[0]), 1),
+  LOG((NumberValue... args) -> log(args[0]), 1),
+  LOG_10((NumberValue... args) -> log10(args[0]), 1),
   COS((NumberValue... args) -> cos(args[0]), 1),
   SIN((NumberValue... args) -> sin(args[0]), 1),
   TAN((NumberValue... args) -> tan(args[0]), 1);

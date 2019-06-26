@@ -1,38 +1,34 @@
-package io.github.asherbearce.graphy;
+package io.github.asherbearce.graphy.controller;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.ViewTreeObserver;
+import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.view.View;
-import androidx.core.view.GestureDetectorCompat;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
+import io.github.asherbearce.graphy.R;
+import io.github.asherbearce.graphy.model.CalculatorInput;
+import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
+import io.github.asherbearce.graphy.view.GraphViewWindow;
 import io.github.asherbearce.graphy.view.InputAdapter;
 import java.util.LinkedList;
 import java.util.List;
-import io.github.asherbearce.graphy.view.GraphViewWindow;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
-  List<String> inputs;
+  List<CalculatorInput> inputs;
   LinearLayout graphContainer;
   ListView inputView;
   ImageView graphDisplay;
@@ -40,12 +36,14 @@ public class MainActivity extends AppCompatActivity
   GraphViewWindow graphImage;
   GestureDetectorCompat scrollDetect;
   InputAdapter adapter;
+  ComputeEnvironment environment;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    environment = new ComputeEnvironment();
     graphContainer = findViewById(R.id.graph_container);
     inputs = new LinkedList<>();
     inputView = findViewById(R.id.input_list);
@@ -82,23 +80,11 @@ public class MainActivity extends AppCompatActivity
     addInputButton.setOnClickListener(new View.OnClickListener(){
       public void onClick(View v){
         //TODO Instead of string, use an object. The issue comes from the string not being unique
-        inputs.add("Hello, world!");
-        //inputView.setAdapter(adapter);
+        inputs.add(new CalculatorInput(environment));
         adapter.notifyDataSetChanged();
       }
     });
-
-
   }
-
-  public void updateInputList(){
-    InputAdapter adapter = new InputAdapter(this, inputs);
-    inputView.setAdapter(adapter);
-  }
-
-  /*public boolean onTouch(View view, MotionEvent event){
-    return scrollDetect.onTouchEvent(event);
-  }*/
 
   @Override
   public void onBackPressed() {
