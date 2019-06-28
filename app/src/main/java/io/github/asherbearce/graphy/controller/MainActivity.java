@@ -73,19 +73,21 @@ public class MainActivity extends AppCompatActivity
         environment.clearContent();
         LinkedList<Function> functions = new LinkedList<>();
 
-        for (CalculatorInput input : inputs){
-          LinkedList<Token> tokens = new Tokenizer(input.getInputString()).Tokenize();
-          try {
-            Function newFunc = new Parser(tokens).parseStatement();
-            environment.putFunction(newFunc);
-            if (newFunc.getNumArgs() == 1){
-              functions.addLast(newFunc);
+        for (CalculatorInput input : inputs) {
+          if (input.getInputString() != null) {
+            LinkedList<Token> tokens = new Tokenizer(input.getInputString()).Tokenize();
+            try {
+              Function newFunc = new Parser(tokens).parseStatement();
+              environment.putFunction(newFunc);
+              if (newFunc.getNumArgs() == 1) {
+                functions.addLast(newFunc);
+                Log.d("Trace", newFunc.getIdentifier());
+              }
+            } catch (ParseException e) {
+              //Do nothing for now
             }
-          }catch (ParseException e){
-            //Do nothing for now
           }
         }
-
         graphImage.setToDraw(functions);
         graphImage.invalidateSelf();
         updatingInputs = false;
@@ -106,12 +108,10 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
     navigationView.setNavigationItemSelectedListener(this);
 
-    addInputButton.setOnClickListener(new View.OnClickListener(){
-      public void onClick(View v){
-        //TODO Instead of string, use an object. The issue comes from the string not being unique
-        inputs.add(new CalculatorInput(environment));
-        adapter.notifyDataSetChanged();
-      }
+    addInputButton.setOnClickListener(v -> {
+      //TODO Instead of string, use an object. The issue comes from the string not being unique
+      inputs.add(new CalculatorInput(environment));
+      adapter.notifyDataSetChanged();
     });
   }
 

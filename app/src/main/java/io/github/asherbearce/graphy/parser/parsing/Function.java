@@ -1,5 +1,6 @@
 package io.github.asherbearce.graphy.parser.parsing;
 
+import android.util.Log;
 import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.exception.UnkownIdentifierException;
 import io.github.asherbearce.graphy.parser.math.NumberValue;
@@ -86,17 +87,22 @@ public class Function extends TokenHandler implements Callable {
       nextToken();
       result = operator.computeUnaryOperation(computeExpression(0));
     }
-    else{
+    else if (getCurrent().getTokenType() == TokenTypes.IDENTIFIER){
       //This token is an identifier, which may be followed by an opening paren, an expression, and a closing paren
       String identifierName = ((IdentifierToken)getCurrent()).getValue();
       if (nextToken().getTokenType() == TokenTypes.OPEN_PAREN){
         //Calling a function within an expression.
         if (env != null && env.getFunction(identifierName) != null){
           //Get all the arguments for this guy.
+          Log.d("Trace", "weird");
+          nextToken();
           Function func = env.getFunction(identifierName);
           NumberValue[] args = getArgs(func);
+          if (func.getNumArgs() != args.length){
 
-          result = env.getFunction(identifierName).invoke(args);
+            throw new ParseException("Number of arguments doesn't match function");
+          }
+          result = func.invoke(args);
         }
         else if (ComputeEnvironment.builtIn.containsKey(identifierName)){
           //Check if the function is part of the built in functions
@@ -125,6 +131,9 @@ public class Function extends TokenHandler implements Callable {
           throw new UnkownIdentifierException("Unknown identifier: " + identifierName);
         }
       }
+    }
+    else{
+      throw new ParseException("No suitable token to parse atom.");
     }
 
     return result;

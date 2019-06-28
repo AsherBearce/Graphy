@@ -96,6 +96,9 @@ public class GraphViewWindow extends Drawable {
     } catch (ParseException e) {
       //Do nothing
     }
+    catch (Exception e){
+      //Do nothing
+    }
   }
 
   @Override
@@ -105,7 +108,9 @@ public class GraphViewWindow extends Drawable {
     Paint paint = new Paint();
     drawBlankGraph(canvas, paint);
     for (Function func : toDraw){
-      drawFunction(func, canvas, paint);
+      if (func != null) {
+        drawFunction(func, canvas, paint);
+      }
     }
   }
 
