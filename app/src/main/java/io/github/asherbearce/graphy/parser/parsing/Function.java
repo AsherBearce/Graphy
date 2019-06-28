@@ -94,7 +94,6 @@ public class Function extends TokenHandler implements Callable {
         //Calling a function within an expression.
         if (env != null && env.getFunction(identifierName) != null){
           //Get all the arguments for this guy.
-          Log.d("Trace", "weird");
           nextToken();
           Function func = env.getFunction(identifierName);
           NumberValue[] args = getArgs(func);

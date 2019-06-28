@@ -20,11 +20,9 @@ public class GraphViewWindow extends Drawable {
   private int width;
   private int offsetX;
   private int offsetY;
-  ComputeEnvironment env;
   private LinkedList<Function> toDraw;
 
   public GraphViewWindow() {
-    env = new ComputeEnvironment();
     toDraw = new LinkedList<>();
   }
 

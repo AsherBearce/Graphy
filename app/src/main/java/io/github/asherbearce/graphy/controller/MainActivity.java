@@ -6,8 +6,6 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,8 +16,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
+import io.github.asherbearce.graphy.database.GraphsDatabase;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
   private InputAdapter adapter;
   private ComputeEnvironment environment;
   private boolean updatingInputs;
+  private GraphsDatabase database;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class MainActivity extends AppCompatActivity
     scrollDetect = new GestureDetectorCompat(this, new ScrollListener());
     adapter = new InputAdapter(this, inputs);
 
+    database = GraphsDatabase.getInstance(getApplication());
+
     graphDisplay.getViewTreeObserver().addOnGlobalLayoutListener(
         () -> {
           graphImage.setWidth(graphDisplay.getWidth());
@@ -74,8 +78,8 @@ public class MainActivity extends AppCompatActivity
         LinkedList<Function> functions = new LinkedList<>();
 
         for (CalculatorInput input : inputs) {
-          if (input.getInputString() != null) {
-            LinkedList<Token> tokens = new Tokenizer(input.getInputString()).Tokenize();
+          if (input.getInput() != null) {
+            LinkedList<Token> tokens = new Tokenizer(input.getInput()).Tokenize();
             try {
               Function newFunc = new Parser(tokens).parseStatement();
               environment.putFunction(newFunc);
@@ -96,6 +100,20 @@ public class MainActivity extends AppCompatActivity
 
     graphDisplay.setImageDrawable(graphImage);
     inputView.setAdapter(adapter);
+
+    LiveData<List<CalculatorInput>> savedState = database.inputDao().getAll();
+
+    savedState.observe(this, new Observer<List<CalculatorInput>>() {
+      @Override
+      public void onChanged(List<CalculatorInput> calculatorInputs) {
+        for (CalculatorInput input : calculatorInputs){
+          inputs.add(input);
+        }
+        adapter.notifyDataSetChanged();
+        adapter.notifyChange();
+      }
+    });
+
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
@@ -110,7 +128,7 @@ public class MainActivity extends AppCompatActivity
 
     addInputButton.setOnClickListener(v -> {
       //TODO Instead of string, use an object. The issue comes from the string not being unique
-      inputs.add(new CalculatorInput(environment));
+      inputs.add(new CalculatorInput());
       adapter.notifyDataSetChanged();
     });
   }

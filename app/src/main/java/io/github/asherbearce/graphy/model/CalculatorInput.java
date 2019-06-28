@@ -4,39 +4,42 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
-import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
 
-//@Entity
+@Entity(tableName = "functions", foreignKeys =
+    @ForeignKey(entity = Graph.class,
+    parentColumns = "id",
+    childColumns = "graph_id"))
 public class CalculatorInput {
-  //@ColumnInfo(name = "source")
+  @ColumnInfo(name = "source")
   private String input;
+  @ColumnInfo(name = "function_id")
+  @PrimaryKey
+  private Long functionId;
 
-  //@PrimaryKey(autoGenerate = true)
-  private String identifier;
-
-  //@ColumnInfo(name = "graph_id")
-  //@ForeignKey(entity = Graph.class, parentColumns = "id", childColumns = "graphId")
+  @ColumnInfo(name = "graph_id")
   private Long graphId;
 
-  private ComputeEnvironment environment;
-
-  public CalculatorInput(ComputeEnvironment environment){
-    this.environment = environment;
+  public Long getFunctionId() {
+    return functionId;
   }
 
-  public String getInputString(){
+  public void setFunctionId(Long functionId) {
+    this.functionId = functionId;
+  }
+
+  public Long getGraphId() {
+    return graphId;
+  }
+
+  public void setGraphId(Long graphId) {
+    this.graphId = graphId;
+  }
+
+  public String getInput(){
     return input;
   }
 
-  public void setInputString(String input){
+  public void setInput(String input){
     this.input = input;
-  }
-
-  public String getIdentifier() {
-    return identifier;
-  }
-
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
   }
 }

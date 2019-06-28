@@ -1,9 +1,5 @@
 # Graphy
 
-* [User Stories](docs/user-stories.md)
-* [Wireframes](docs/wireframes.md)
-
-***
 ## Summary of the app 
 
 My idea for a useful app would be a graphing calculator capable of doing Calculus, and modeling solutions to differential equations. 
@@ -29,5 +25,10 @@ valued functions, integrals and derivatives. Another idea that I may include lat
 definitely increase the usability for what I'm assuming would be most of the users of my app. I'd also like to include some user 
 interface that allows you to look at various sections of the graph, most likely by scrolling your finger across the screen. 
 
-### Entity relationship diagram
-[Entity relationship diagrams](docs/ERD.md)
+### Milestone 1
+* [Entity relationship diagrams](docs/ERD.md)
+* [User Stories](docs/user-stories.md)
+* [Wireframes](docs/wireframes.md)
+
+### Milestone 2
+[Milestone 2](docs/milestone-2.md)

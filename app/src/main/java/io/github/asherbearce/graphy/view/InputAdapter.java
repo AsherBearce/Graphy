@@ -25,7 +25,7 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
     //TODO inflate this
   }
 
-  private void notifyChange(){
+  public void notifyChange(){
     if (listener != null){
       listener.onChange(contents);
     }
@@ -47,7 +47,7 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
     final EditText input = layout.findViewById(R.id.text_input);
     ImageButton removeButton = layout.findViewById(R.id.remove_item_button);
 
-    input.setText(item.getInputString());
+    input.setText(item.getInput());
 
     removeButton.setOnClickListener(
         v -> {
@@ -71,7 +71,7 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
 
           @Override
           public void afterTextChanged(Editable s) {
-            item.setInputString(s.toString());
+            item.setInput(s.toString());
             InputAdapter.this.notifyChange();
           }
         }
