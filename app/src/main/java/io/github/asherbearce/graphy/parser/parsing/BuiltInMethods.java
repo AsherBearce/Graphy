@@ -1,15 +1,15 @@
 package io.github.asherbearce.graphy.parser.parsing;
 
-import static io.github.asherbearce.graphy.parser.math.MathUtil.*;
 import io.github.asherbearce.graphy.parser.exception.ParseException;
+import io.github.asherbearce.graphy.parser.math.MathUtil;
 import io.github.asherbearce.graphy.parser.math.NumberValue;
 
 public enum BuiltInMethods implements Callable {
-  LOG((NumberValue... args) -> log(args[0]), 1),
-  LOG_10((NumberValue... args) -> log10(args[0]), 1),
-  COS((NumberValue... args) -> cos(args[0]), 1),
-  SIN((NumberValue... args) -> sin(args[0]), 1),
-  TAN((NumberValue... args) -> tan(args[0]), 1);
+  LOG((NumberValue... args) -> MathUtil.log(args[0]), 1),
+  LOG_10((NumberValue... args) ->  MathUtil.log10(args[0]), 1),
+  COS((NumberValue... args) -> MathUtil.cos(args[0]), 1),
+  SIN((NumberValue... args) -> MathUtil.sin(args[0]), 1),
+  TAN((NumberValue... args) -> MathUtil.tan(args[0]), 1);
 
   private Invokable method;
   private int numArgs;

@@ -1,6 +1,7 @@
 package io.github.asherbearce.graphy.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
 import io.github.asherbearce.graphy.model.CalculatorInput;
+import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
+import io.github.asherbearce.graphy.parser.parsing.Function;
+import io.github.asherbearce.graphy.parser.parsing.Parser;
+import io.github.asherbearce.graphy.parser.parsing.Tokenizer;
+import io.github.asherbearce.graphy.parser.token.Token;
 import io.github.asherbearce.graphy.view.GraphViewWindow;
 import io.github.asherbearce.graphy.view.InputAdapter;
 import java.util.LinkedList;
@@ -28,15 +34,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
-  List<CalculatorInput> inputs;
-  LinearLayout graphContainer;
-  ListView inputView;
-  ImageView graphDisplay;
-  ImageButton addInputButton;
-  GraphViewWindow graphImage;
-  GestureDetectorCompat scrollDetect;
-  InputAdapter adapter;
-  ComputeEnvironment environment;
+  private List<CalculatorInput> inputs;
+  private LinearLayout graphContainer;
+  private ListView inputView;
+  private ImageView graphDisplay;
+  private ImageButton addInputButton;
+  private GraphViewWindow graphImage;
+  private GestureDetectorCompat scrollDetect;
+  private InputAdapter adapter;
+  private ComputeEnvironment environment;
+  private boolean updatingInputs;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +61,36 @@ public class MainActivity extends AppCompatActivity
     adapter = new InputAdapter(this, inputs);
 
     graphDisplay.getViewTreeObserver().addOnGlobalLayoutListener(
-        new OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            graphImage.setWidth(graphDisplay.getWidth());
-            graphImage.setHeight(graphDisplay.getHeight());
-          }
+        () -> {
+          graphImage.setWidth(graphDisplay.getWidth());
+          graphImage.setHeight(graphDisplay.getHeight());
         }
     );
+
+    adapter.setOnChangeListener((List<CalculatorInput> inputs) -> {
+      if (!updatingInputs){
+        updatingInputs = true;
+        environment.clearContent();
+        LinkedList<Function> functions = new LinkedList<>();
+
+        for (CalculatorInput input : inputs){
+          LinkedList<Token> tokens = new Tokenizer(input.getInputString()).Tokenize();
+          try {
+            Function newFunc = new Parser(tokens).parseStatement();
+            environment.putFunction(newFunc);
+            if (newFunc.getNumArgs() == 1){
+              functions.addLast(newFunc);
+            }
+          }catch (ParseException e){
+            //Do nothing for now
+          }
+        }
+
+        graphImage.setToDraw(functions);
+        graphImage.invalidateSelf();
+        updatingInputs = false;
+      }
+    });
 
     graphDisplay.setImageDrawable(graphImage);
     inputView.setAdapter(adapter);

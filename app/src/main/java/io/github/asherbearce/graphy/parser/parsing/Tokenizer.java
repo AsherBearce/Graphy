@@ -30,6 +30,10 @@ public final class Tokenizer {
 
   public LinkedList<Token> Tokenize(){
     LinkedList<Token> result = new LinkedList<>();
+    if (toTokenize.length() == 0){
+      result.addLast(TokenTypes.END);
+      return result;
+    }
     char currentCharacter = toTokenize.charAt(0);
 
     while(hasNext()){

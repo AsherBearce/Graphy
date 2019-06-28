@@ -1,10 +1,23 @@
 package io.github.asherbearce.graphy.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
 
+//@Entity
 public class CalculatorInput {
+  //@ColumnInfo(name = "source")
   private String input;
+
+  //@PrimaryKey(autoGenerate = true)
   private String identifier;
+
+  //@ColumnInfo(name = "graph_id")
+  //@ForeignKey(entity = Graph.class, parentColumns = "id", childColumns = "graphId")
+  private Long graphId;
+
   private ComputeEnvironment environment;
 
   public CalculatorInput(ComputeEnvironment environment){
@@ -25,9 +38,5 @@ public class CalculatorInput {
 
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
-  }
-
-  public ComputeEnvironment getEnvironment() {
-    return environment;
   }
 }

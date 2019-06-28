@@ -6,15 +6,13 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.math.Real;
 import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
-import io.github.asherbearce.graphy.parser.parsing.Method;
-import io.github.asherbearce.graphy.parser.parsing.Tokenizer;
-import io.github.asherbearce.graphy.parser.token.Token;
+import io.github.asherbearce.graphy.parser.parsing.Function;
 import java.util.LinkedList;
+
 
 public class GraphViewWindow extends Drawable {
 
@@ -23,17 +21,11 @@ public class GraphViewWindow extends Drawable {
   private int offsetX;
   private int offsetY;
   ComputeEnvironment env;
+  private LinkedList<Function> toDraw;
 
   public GraphViewWindow() {
     env = new ComputeEnvironment();
-    String function = "f(x) = sin(x)";
-    LinkedList<Token> toks = new Tokenizer(function).Tokenize();
-    try {
-      env.parseStatement(toks);
-      Log.d("Trace", "Parse succeeded.");
-    } catch (ParseException e) {
-      Log.d("Trace", e.getMessage());
-    }
+    toDraw = new LinkedList<>();
   }
 
   public void setHeight(int height) {
@@ -50,6 +42,14 @@ public class GraphViewWindow extends Drawable {
 
   public void setOffsetY(int offsetY) {
     this.offsetY = offsetY;
+  }
+
+  public LinkedList<Function> getToDraw() {
+    return toDraw;
+  }
+
+  public void setToDraw(LinkedList<Function> toDraw) {
+    this.toDraw = toDraw;
   }
 
   private void drawBlankGraph(Canvas canvas, Paint paint) {
@@ -70,7 +70,7 @@ public class GraphViewWindow extends Drawable {
   }
 
   //This should generally be called on a different thread.
-  private void drawFunction(Method func, Canvas canvas, Paint paint) {
+  private void drawFunction(Function func, Canvas canvas, Paint paint) {
     int centerX = width / 2;
     int centerY = height / 2;
     float scale = 100;
@@ -92,9 +92,6 @@ public class GraphViewWindow extends Drawable {
               x + 1 + centerX, -functionOutputNext * scale + centerY,
               paint);
         }
-
-
-
       }
     } catch (ParseException e) {
       //Do nothing
@@ -107,7 +104,9 @@ public class GraphViewWindow extends Drawable {
     //TODO take in drawing instructions, given a view offset and view scale.
     Paint paint = new Paint();
     drawBlankGraph(canvas, paint);
-    drawFunction(env.getFunction("f"), canvas, paint);
+    for (Function func : toDraw){
+      drawFunction(func, canvas, paint);
+    }
   }
 
   @Override
