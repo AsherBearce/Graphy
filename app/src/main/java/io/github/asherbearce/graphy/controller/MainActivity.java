@@ -6,6 +6,8 @@ import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,11 +43,11 @@ public class MainActivity extends AppCompatActivity
   private ImageView graphDisplay;
   private ImageButton addInputButton;
   private GraphViewWindow graphImage;
-  private GestureDetectorCompat scrollDetect;
   private InputAdapter adapter;
   private ComputeEnvironment environment;
   private boolean updatingInputs;
   private GraphsDatabase database;
+  private GestureDetectorCompat dragListener;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +61,8 @@ public class MainActivity extends AppCompatActivity
     graphDisplay = findViewById(R.id.graph_display);
     addInputButton = findViewById(R.id.add_input_button);
     graphImage = new GraphViewWindow();
-    scrollDetect = new GestureDetectorCompat(this, new ScrollListener());
     adapter = new InputAdapter(this, inputs);
+    dragListener = new GestureDetectorCompat(this, new DragListener());
 
     database = GraphsDatabase.getInstance(getApplication());
 
@@ -70,6 +72,13 @@ public class MainActivity extends AppCompatActivity
           graphImage.setHeight(graphDisplay.getHeight());
         }
     );
+
+    graphDisplay.setOnTouchListener(new OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        return dragListener.onTouchEvent(event);
+      }
+    });
 
     adapter.setOnChangeListener((List<CalculatorInput> inputs) -> {
       if (!updatingInputs){
@@ -190,13 +199,13 @@ public class MainActivity extends AppCompatActivity
     return true;
   }
 
-  private class ScrollListener extends GestureDetector.SimpleOnGestureListener{
+  private class DragListener extends GestureDetector.SimpleOnGestureListener{
 
-    public boolean onDown(MotionEvent evt){
-      graphImage.setOffsetX((int)evt.getX());
-      graphImage.setOffsetY((int)evt.getY());
-      //graphImage.invalidateSelf();
-
+    @Override
+    public boolean onDown(MotionEvent e) {
+      graphImage.setOffsetX(e.getX());
+      graphImage.setOffsetY(e.getY());
+      graphImage.invalidateSelf();
       return true;
     }
   }

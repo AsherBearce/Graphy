@@ -1,12 +1,18 @@
 package io.github.asherbearce.graphy.view;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.core.view.GestureDetectorCompat;
 import io.github.asherbearce.graphy.parser.exception.ParseException;
 import io.github.asherbearce.graphy.parser.math.Real;
 import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
@@ -18,8 +24,9 @@ public class GraphViewWindow extends Drawable {
 
   private int height;
   private int width;
-  private int offsetX;
-  private int offsetY;
+  private float offsetX;
+  private float offsetY;
+  private GestureDetectorCompat dragListener;
   private LinkedList<Function> toDraw;
 
   public GraphViewWindow() {
@@ -34,11 +41,11 @@ public class GraphViewWindow extends Drawable {
     this.width = width;
   }
 
-  public void setOffsetX(int offsetX) {
+  public void setOffsetX(float offsetX) {
     this.offsetX = offsetX;
   }
 
-  public void setOffsetY(int offsetY) {
+  public void setOffsetY(float offsetY) {
     this.offsetY = offsetY;
   }
 
@@ -55,16 +62,11 @@ public class GraphViewWindow extends Drawable {
     paint.setColor(Color.BLACK);
     int centerX = width / 2;
     int centerY = height / 2;
-    int originX = centerX - offsetX;
-    int originY = centerY - offsetY;
+    int originX = centerX - (int)offsetX;
+    int originY = centerY - (int)offsetY;
 
-    if (originX >= centerX - centerX / 2 && originX <= centerX + centerX / 2) {
-      canvas.drawLine(originX, 0, originX, height, paint);
-    }
-
-    if (originY >= centerY - centerY / 2 && originY <= centerY + centerY / 2) {
-      canvas.drawLine(0, originY, width, originY, paint);
-    }
+    canvas.drawLine(originX, 0, originX, height, paint);
+    canvas.drawLine(0, originY, width, originY, paint);
   }
 
   //This should generally be called on a different thread.
@@ -77,8 +79,8 @@ public class GraphViewWindow extends Drawable {
 
     try {
       for (int x = -width / 2; x < width / 2; x++) {
-        float xPos = x / scale;
-        float xPosNext = (x + 1) / scale;
+        float xPos = (x + offsetX) / scale;
+        float xPosNext = (x + offsetX + 1) / scale;
         float functionOutput = (float)func.invoke(new Real(xPos)).real().getValue();
         float functionOutputNext = (float)func.invoke(new Real(xPosNext)).real().getValue();
         float diffX = xPosNext - xPos;
@@ -86,8 +88,8 @@ public class GraphViewWindow extends Drawable {
 
         if (Math.abs(diffY / diffX) < 1000){
           canvas.drawLine(
-              x + centerX, -functionOutput * scale + centerY,
-              x + 1 + centerX, -functionOutputNext * scale + centerY,
+              x + centerX, -functionOutput * scale + centerY - offsetY,
+              x + 1 + centerX, -functionOutputNext * scale + centerY - offsetY,
               paint);
         }
       }
@@ -126,4 +128,6 @@ public class GraphViewWindow extends Drawable {
   public int getOpacity() {
     return PixelFormat.OPAQUE;
   }
+
+
 }

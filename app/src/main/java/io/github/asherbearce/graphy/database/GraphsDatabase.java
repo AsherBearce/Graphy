@@ -56,7 +56,6 @@ public abstract class GraphsDatabase extends RoomDatabase {
 
     @Override
     protected Void doInBackground(Void... voids){
-
       Graph graph = new Graph();
       graph.id = 0L;
       db.graphDao().addGraph(graph);
