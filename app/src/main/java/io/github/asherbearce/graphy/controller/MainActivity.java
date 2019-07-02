@@ -1,5 +1,8 @@
 package io.github.asherbearce.graphy.controller;
 
+import static android.view.View.GONE;
+
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -39,27 +42,31 @@ public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
   private List<CalculatorInput> inputs;
   private LinearLayout graphContainer;
+  private LinearLayout inputContainer;
   private ListView inputView;
   private ImageView graphDisplay;
   private ImageButton addInputButton;
+  private ImageButton collapseDownButton;
   private GraphViewWindow graphImage;
   private InputAdapter adapter;
   private ComputeEnvironment environment;
   private boolean updatingInputs;
   private GraphsDatabase database;
   private GestureDetectorCompat dragListener;
+  boolean listCollapsed;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
     environment = new ComputeEnvironment();
     graphContainer = findViewById(R.id.graph_container);
+    inputContainer = findViewById(R.id.list_view_container);
     inputs = new LinkedList<>();
     inputView = findViewById(R.id.input_list);
     graphDisplay = findViewById(R.id.graph_display);
     addInputButton = findViewById(R.id.add_input_button);
+    collapseDownButton = findViewById(R.id.collapse_input_button);
     graphImage = new GraphViewWindow();
     adapter = new InputAdapter(this, inputs);
     dragListener = new GestureDetectorCompat(this, new DragListener());
@@ -94,7 +101,6 @@ public class MainActivity extends AppCompatActivity
               environment.putFunction(newFunc);
               if (newFunc.getNumArgs() == 1) {
                 functions.addLast(newFunc);
-                Log.d("Trace", newFunc.getIdentifier());
               }
             } catch (ParseException e) {
               //Do nothing for now
@@ -103,6 +109,7 @@ public class MainActivity extends AppCompatActivity
         }
         graphImage.setToDraw(functions);
         graphImage.invalidateSelf();
+
         updatingInputs = false;
       }
     });
@@ -139,6 +146,21 @@ public class MainActivity extends AppCompatActivity
       //TODO Instead of string, use an object. The issue comes from the string not being unique
       inputs.add(new CalculatorInput());
       adapter.notifyDataSetChanged();
+    });
+
+    collapseDownButton.setOnClickListener(v -> {
+      if (listCollapsed){
+        listCollapsed = false;
+        addInputButton.setVisibility(View.VISIBLE);
+        inputContainer.setVisibility(View.VISIBLE);
+        collapseDownButton.setImageDrawable(getDrawable(R.drawable.collapse_down_icon));
+      }
+      else{
+        listCollapsed = true;
+        addInputButton.setVisibility(View.GONE);
+        inputContainer.setVisibility(View.GONE);
+        collapseDownButton.setImageDrawable(getDrawable(R.drawable.expand_up_icon));
+      }
     });
   }
 
@@ -200,12 +222,17 @@ public class MainActivity extends AppCompatActivity
   }
 
   private class DragListener extends GestureDetector.SimpleOnGestureListener{
-
     @Override
     public boolean onDown(MotionEvent e) {
-      graphImage.setOffsetX(e.getX());
-      graphImage.setOffsetY(e.getY());
+      return true;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+      graphImage.setOffsetX(graphImage.getWidth() / 2 - e2.getX());
+      graphImage.setOffsetY(graphImage.getHeight() / 2 - e2.getY());
       graphImage.invalidateSelf();
+
       return true;
     }
   }
