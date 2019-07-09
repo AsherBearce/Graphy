@@ -80,12 +80,7 @@ public class MainActivity extends AppCompatActivity
         }
     );
 
-    graphDisplay.setOnTouchListener(new OnTouchListener() {
-      @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        return dragListener.onTouchEvent(event);
-      }
-    });
+    graphDisplay.setOnTouchListener((v, event) -> dragListener.onTouchEvent(event));
 
     adapter.setOnChangeListener((List<CalculatorInput> inputs) -> {
       if (!updatingInputs){
@@ -222,15 +217,21 @@ public class MainActivity extends AppCompatActivity
   }
 
   private class DragListener extends GestureDetector.SimpleOnGestureListener{
+    float offsetX;
+    float offsetY;
+
     @Override
     public boolean onDown(MotionEvent e) {
+      offsetX = graphImage.getOffsetX();
+      offsetY = graphImage.getOffsetY();
+
       return true;
     }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-      graphImage.setOffsetX(graphImage.getWidth() / 2 - e2.getX());
-      graphImage.setOffsetY(graphImage.getHeight() / 2 - e2.getY());
+      graphImage.setOffsetX(offsetX + e1.getX() - e2.getX());
+      graphImage.setOffsetY(offsetY + e1.getY() - e2.getY());
       graphImage.invalidateSelf();
 
       return true;
