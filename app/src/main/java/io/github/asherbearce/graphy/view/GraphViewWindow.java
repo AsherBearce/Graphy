@@ -8,10 +8,10 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
-import io.github.asherbearce.graphy.parser.exception.ParseException;
-import io.github.asherbearce.graphy.parser.math.Real;
-import io.github.asherbearce.graphy.parser.parsing.Function;
+import io.github.asherbearce.graphy.vm.Function;
 import java.util.LinkedList;
+import io.github.asherbearce.graphy.math.*;
+import io.github.asherbearce.graphy.exception.*;
 
 public class GraphViewWindow extends Drawable {
 

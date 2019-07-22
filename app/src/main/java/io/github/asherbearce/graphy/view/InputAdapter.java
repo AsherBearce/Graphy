@@ -22,7 +22,6 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
   public InputAdapter(@NonNull Context context, @NonNull List<CalculatorInput> objects) {
     super(context, R.layout.input_list_item, objects);
     contents = objects;
-    //TODO inflate this
   }
 
   public void notifyChange(){

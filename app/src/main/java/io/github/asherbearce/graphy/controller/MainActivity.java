@@ -27,14 +27,13 @@ import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
 import io.github.asherbearce.graphy.database.GraphsDatabase;
 import io.github.asherbearce.graphy.model.CalculatorInput;
-import io.github.asherbearce.graphy.parser.exception.ParseException;
-import io.github.asherbearce.graphy.parser.parsing.ComputeEnvironment;
-import io.github.asherbearce.graphy.parser.parsing.Function;
-import io.github.asherbearce.graphy.parser.parsing.Parser;
-import io.github.asherbearce.graphy.parser.parsing.Tokenizer;
-import io.github.asherbearce.graphy.parser.token.Token;
 import io.github.asherbearce.graphy.view.GraphViewWindow;
 import io.github.asherbearce.graphy.view.InputAdapter;
+import io.github.asherbearce.graphy.vm.ComputeEnvironment;
+import io.github.asherbearce.graphy.parsing.*;
+import io.github.asherbearce.graphy.token.*;
+import io.github.asherbearce.graphy.exception.*;
+import io.github.asherbearce.graphy.vm.Function;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-    environment = new ComputeEnvironment();
     graphContainer = findViewById(R.id.graph_container);
     inputContainer = findViewById(R.id.list_view_container);
     inputs = new LinkedList<>();
@@ -70,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     graphImage = new GraphViewWindow();
     adapter = new InputAdapter(this, inputs);
     dragListener = new GestureDetectorCompat(this, new DragListener());
+    environment = ComputeEnvironment.getInstance();
 
     database = GraphsDatabase.getInstance(getApplication());
 
@@ -89,15 +88,15 @@ public class MainActivity extends AppCompatActivity
         LinkedList<Function> functions = new LinkedList<>();
 
         for (CalculatorInput input : inputs) {
-          if (input.getInput() != null) {
-            LinkedList<Token> tokens = new Tokenizer(input.getInput()).Tokenize();
+          if (input.getInput() != null && !input.getInput().isEmpty()) {
             try {
-              Function newFunc = new Parser(tokens).parseStatement();
+              LinkedList<Token> tokens = new Tokenizer(input.getInput()).Tokenize();
+              Function newFunc = new Parser(tokens).parseFunction();
               environment.putFunction(newFunc);
               if (newFunc.getNumArgs() == 1) {
                 functions.addLast(newFunc);
               }
-            } catch (ParseException e) {
+            } catch (ParseException | UnknownTokenException e) {
               //Do nothing for now
             }
           }
