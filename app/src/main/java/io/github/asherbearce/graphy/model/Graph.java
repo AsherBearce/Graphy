@@ -8,4 +8,5 @@ public class Graph {
   @PrimaryKey
   public Long id;
 
+  public String name;
 }

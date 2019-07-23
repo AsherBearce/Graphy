@@ -13,6 +13,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
+import android.util.Log;
 
 /**
  * Responsible for handling all database operations.
@@ -20,15 +21,16 @@ import io.github.asherbearce.graphy.R;
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
 
+  private boolean editorOpen = false;
+  private GraphEditorFragment editor;
+  private MainMenuFragment menuFragment;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.fragment_placeHolder, new GraphEditorFragment());
-
-    ft.commit();
+    openEditorFragment();
 
     //database = GraphsDatabase.getInstance(getApplication());
 
@@ -58,11 +60,31 @@ public class MainActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
   }
 
+  private void openEditorFragment(){
+    if (editor == null){
+      editor = new GraphEditorFragment();
+    }
+    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.fragment_placeHolder, editor);
+    ft.commit();
+    editorOpen = true;
+  }
+
+  private void openMenuFragment(){
+    if (menuFragment == null){
+      menuFragment = new MainMenuFragment();
+    }
+    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.fragment_placeHolder, menuFragment);
+    ft.commit();
+    editorOpen = false;
+  }
+
   @Override
   public void onBackPressed() {
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     if (drawer.isDrawerOpen(GravityCompat.START)) {
-      drawer.closeDrawer(GravityCompat.START);
+      //drawer.closeDrawer(GravityCompat.START);
     } else {
       super.onBackPressed();
     }
@@ -90,25 +112,29 @@ public class MainActivity extends AppCompatActivity
     return super.onOptionsItemSelected(item);
   }
 
-  @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(MenuItem item) {
-    // Handle navigation view item clicks here.
     int id = item.getItemId();
 
-    if (id == R.id.new_graph) {
-      // Handle the camera action
-    } else if (id == R.id.save_graph) {
+    if (id == R.id.new_graph_nav) {
+      if (!editorOpen) {
+        openEditorFragment();
+        menuFragment.closeFileViewer();
+      }
+    } else if (id == R.id.save_graph_nav) {
+      if (editorOpen){
+        //TODO save this graph to the database.
 
-    } else if (id == R.id.open_graph) {
-
+      }
     } else if (id == R.id.nav_main_menu) {
-
+      if (editorOpen) {
+        openMenuFragment();
+      }
     }
 
     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
     drawer.closeDrawer(GravityCompat.START);
+
     return true;
   }
-
 }
