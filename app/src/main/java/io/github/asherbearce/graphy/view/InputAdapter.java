@@ -15,21 +15,36 @@ import io.github.asherbearce.graphy.R;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import java.util.List;
 
+/**
+ * Handles all displaying all the current inputs in the graph editor
+ */
 public class InputAdapter extends ArrayAdapter<CalculatorInput> {
   private List<CalculatorInput> contents;
   private OnInputChangedListener listener;
 
+  /**
+   * Constructs a new InputAdapter
+   * @param context The current application context
+   * @param objects The list of inputs
+   */
   public InputAdapter(@NonNull Context context, @NonNull List<CalculatorInput> objects) {
     super(context, R.layout.input_list_item, objects);
     contents = objects;
   }
 
+  /**
+   * Notifies the adapter of a change in inputs so they can be parsed
+   */
   public void notifyChange(){
     if (listener != null){
       listener.onChange(contents);
     }
   }
 
+  /**
+   * Sets the current change listener
+   * @param listener The new listener object
+   */
   public void setOnChangeListener(OnInputChangedListener listener){
     this.listener = listener;
   }
@@ -79,7 +94,16 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
     return layout;
   }
 
+  /**
+   * A functional interface to create an observer pattern that is fired whenever some sort of change
+   * occurs
+   */
   public interface OnInputChangedListener{
+
+    /**
+     * This method is called whenever something changes in the adapter
+     * @param contents The changed contents of this list
+     */
     void onChange(List<CalculatorInput> contents);
   }
 }

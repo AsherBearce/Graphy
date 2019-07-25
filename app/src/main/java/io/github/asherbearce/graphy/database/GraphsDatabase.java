@@ -14,16 +14,36 @@ import io.github.asherbearce.graphy.model.dao.CalculatorGraphJoinDao;
 import io.github.asherbearce.graphy.model.dao.CalculatorInputDao;
 import io.github.asherbearce.graphy.model.dao.GraphDao;
 
+/**
+ * A singleton class which uses Room to execute database queries
+ */
 @Database(entities = {Graph.class, CalculatorInput.class, CalculatorGraphJoin.class}, version = 1)
 public abstract class GraphsDatabase extends RoomDatabase {
   private static GraphsDatabase INSTANCE;
 
+  /**
+   * The Dao corresponding to calculator inputs.
+   * @return {@link CalculatorInputDao}
+   */
   public abstract CalculatorInputDao inputDao();
 
+  /**
+   * The Dao corresponding to the graph inputs.
+   * @return {@link GraphDao}
+   */
   public abstract GraphDao graphDao();
 
+  /**
+   * The Dao corresponding to the join table between the graph and calculator inputs.
+   * @return {@link CalculatorGraphJoinDao}
+   */
   public abstract CalculatorGraphJoinDao calculatorGraphJoinDao();
 
+  /**
+   * Gets the one instance of a database service
+   * @param context The current application context
+   * @return {@link GraphsDatabase}
+   */
   public static GraphsDatabase getInstance(Context context){
     if (INSTANCE == null){
       synchronized (GraphsDatabase.class){

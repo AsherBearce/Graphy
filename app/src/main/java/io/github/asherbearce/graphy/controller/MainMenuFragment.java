@@ -107,6 +107,10 @@ public class MainMenuFragment extends Fragment {
     graphList.setAdapter(listAdapter);
   }
 
+  /**
+   * Sets the main activity controller for this app.
+   * @param controller The main activity controller
+   */
   public void setController(MainActivity controller){
     this.controller = controller;
   }

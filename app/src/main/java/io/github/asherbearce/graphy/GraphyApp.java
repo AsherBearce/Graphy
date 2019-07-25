@@ -4,6 +4,9 @@ import android.app.Application;
 import com.facebook.stetho.Stetho;
 import io.github.asherbearce.graphy.database.GraphsDatabase;
 
+/**
+ * The main app class
+ */
 public class GraphyApp extends Application {
 
   @Override

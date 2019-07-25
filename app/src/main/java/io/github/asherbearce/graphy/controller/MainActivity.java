@@ -11,16 +11,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
-import android.util.Log;
 import io.github.asherbearce.graphy.database.GraphsDatabase;
-import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.Graph;
-import io.github.asherbearce.graphy.viewmodel.CalculatorInputViewModel;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -33,7 +27,6 @@ public class MainActivity extends AppCompatActivity
   private GraphEditorFragment editor;
   private MainMenuFragment menuFragment;
   private GraphsDatabase database;
-  private CalculatorInputViewModel inputViewModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +36,6 @@ public class MainActivity extends AppCompatActivity
     openEditorFragment();
 
     database = GraphsDatabase.getInstance(getApplication());
-    inputViewModel = ViewModelProviders.of(this).get(CalculatorInputViewModel.class);
 
     /*LiveData<List<CalculatorInput>> savedState = database.inputDao().getAll();
 
@@ -71,6 +63,9 @@ public class MainActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
   }
 
+  /**
+   * Displays the editor fragment.
+   */
   public void openEditorFragment(){
     if (editor == null){
       editor = new GraphEditorFragment();
@@ -81,6 +76,9 @@ public class MainActivity extends AppCompatActivity
     editorOpen = true;
   }
 
+  /**
+   * Displays the file navigation fragment.
+   */
   public void openMenuFragment(){
     if (menuFragment == null){
       menuFragment = new MainMenuFragment();
