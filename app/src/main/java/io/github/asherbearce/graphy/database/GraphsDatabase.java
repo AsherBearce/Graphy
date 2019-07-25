@@ -10,10 +10,11 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.*;
+import io.github.asherbearce.graphy.model.dao.CalculatorGraphJoinDao;
 import io.github.asherbearce.graphy.model.dao.CalculatorInputDao;
 import io.github.asherbearce.graphy.model.dao.GraphDao;
 
-@Database(entities = {Graph.class, CalculatorInput.class}, version = 1)
+@Database(entities = {Graph.class, CalculatorInput.class, CalculatorGraphJoin.class}, version = 1)
 public abstract class GraphsDatabase extends RoomDatabase {
   private static GraphsDatabase INSTANCE;
 
@@ -21,10 +22,9 @@ public abstract class GraphsDatabase extends RoomDatabase {
 
   public abstract GraphDao graphDao();
 
-
+  public abstract CalculatorGraphJoinDao calculatorGraphJoinDao();
 
   public static GraphsDatabase getInstance(Context context){
-    Log.d("Trace", "Okay");
     if (INSTANCE == null){
       synchronized (GraphsDatabase.class){
         if (INSTANCE == null){
@@ -34,7 +34,6 @@ public abstract class GraphsDatabase extends RoomDatabase {
                     @Override
                     public void onCreate(@NonNull SupportSQLiteDatabase db) {
                       super.onCreate(db);
-                      Log.d("Trace", "....?");
                       new PopulateDbTask(INSTANCE).execute();
 
                     }
@@ -58,6 +57,7 @@ public abstract class GraphsDatabase extends RoomDatabase {
     protected Void doInBackground(Void... voids){
       Graph graph = new Graph();
       graph.id = 0L;
+      graph.name = "Sample";
       db.graphDao().addGraph(graph);
 
       CalculatorInput input = new CalculatorInput();

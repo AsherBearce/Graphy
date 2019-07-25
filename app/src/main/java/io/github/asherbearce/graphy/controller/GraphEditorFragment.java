@@ -3,6 +3,7 @@ package io.github.asherbearce.graphy.controller;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,15 +17,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import io.github.asherbearce.graphy.R;
 import io.github.asherbearce.graphy.exception.UnknownTokenException;
 import io.github.asherbearce.graphy.exception.ParseException;
 import io.github.asherbearce.graphy.model.CalculatorInput;
+import io.github.asherbearce.graphy.model.Graph;
 import io.github.asherbearce.graphy.parsing.Parser;
 import io.github.asherbearce.graphy.parsing.Tokenizer;
 import io.github.asherbearce.graphy.token.Token;
 import io.github.asherbearce.graphy.view.GraphViewWindow;
 import io.github.asherbearce.graphy.view.InputAdapter;
+import io.github.asherbearce.graphy.viewmodel.GraphEditorViewModel;
 import io.github.asherbearce.graphy.vm.ComputeEnvironment;
 import io.github.asherbearce.graphy.vm.Function;
 import java.util.LinkedList;
@@ -47,6 +52,7 @@ public class GraphEditorFragment extends Fragment {
   private boolean updatingInputs;
   private boolean listCollapsed;
   private GestureDetectorCompat dragListener;
+  private GraphEditorViewModel viewModel;
 
   @Nullable
   @Override
@@ -62,6 +68,7 @@ public class GraphEditorFragment extends Fragment {
     addInputButton = frag.findViewById(R.id.add_input_button);
     collapseDownButton = frag.findViewById(R.id.collapse_input_button);
     dragListener = new GestureDetectorCompat(getContext().getApplicationContext(), new DragListener());
+    viewModel = ViewModelProviders.of(this).get(GraphEditorViewModel.class);
 
     graphDisplay.getViewTreeObserver().addOnGlobalLayoutListener(
         () -> {
@@ -75,7 +82,39 @@ public class GraphEditorFragment extends Fragment {
     setupAdapter(getContext().getApplicationContext());
     setupButtons(getContext().getApplicationContext());
 
+    viewModel.getFunctions().observe(this, new Observer<List<CalculatorInput>>() {
+      @Override
+      public void onChanged(List<CalculatorInput> calculatorInputs) {
+        Log.d("Trace", calculatorInputs.size() + "");
+        functions.clear();
+
+        for (CalculatorInput input : calculatorInputs){
+          Log.d("Trace", input.getInput());
+          functions.add(input);
+        }
+
+        adapter.notifyDataSetChanged();
+      }
+    });
+
     return frag;
+  }
+
+  /**
+   * Returns all the inputs currently in the calculator
+   * @return {@link List}
+   */
+  public List<CalculatorInput> getFunctions() {
+    return functions;
+  }
+
+  /**
+   * Sets the functions if loading from a database
+   * @param newFunctions The list of inputs
+   */
+  public void setFunctions(List<CalculatorInput> newFunctions){
+    functions = newFunctions;
+    adapter.notifyDataSetChanged();
   }
 
   private void setupAdapter(Context context){

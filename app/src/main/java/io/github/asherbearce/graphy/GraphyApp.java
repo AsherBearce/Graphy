@@ -12,7 +12,7 @@ public class GraphyApp extends Application {
     Stetho.initializeWithDefaults(this);
     new Thread(
         ()->{
-          GraphsDatabase.getInstance(this).graphDao().deleta();
+          GraphsDatabase.getInstance(this).graphDao().delete();
         }
     ).start();
   }

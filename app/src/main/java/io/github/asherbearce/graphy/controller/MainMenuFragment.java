@@ -1,8 +1,10 @@
 package io.github.asherbearce.graphy.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -11,8 +13,12 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import io.github.asherbearce.graphy.R;
+import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.Graph;
+import io.github.asherbearce.graphy.view.GraphAdapter;
+import io.github.asherbearce.graphy.viewmodel.GraphEditorViewModel;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -23,7 +29,14 @@ public class MainMenuFragment extends Fragment {
   private ListView graphList;
   private List<Graph> graphs;
   private boolean fileViewerOpen = false;
-  private ArrayAdapter<Graph> listAdapter;
+  private GraphAdapter listAdapter;
+  private OnClickListener newGraphListener;
+  private LinearLayout newGraphOption;
+  private MainActivity controller;
+  //TODO set the controller field to the main activity.
+  public MainMenuFragment(){
+    graphs = new LinkedList<>();
+  }
 
   @Nullable
   @Override
@@ -35,9 +48,11 @@ public class MainMenuFragment extends Fragment {
     openGraphButton = fragment.findViewById(R.id.open_graph_button);
     graphListContainer = fragment.findViewById(R.id.list_container);
     graphList = fragment.findViewById(R.id.graphs_list);
-    graphs = new LinkedList<>();
+    newGraphOption = fragment.findViewById(R.id.new_graph_option);
 
     setupButtons();
+    setupAdapter();
+    listAdapter.notifyDataSetChanged();
 
     return fragment;
   }
@@ -48,6 +63,7 @@ public class MainMenuFragment extends Fragment {
   public void closeFileViewer(){
     fileViewerOpen = false;
     graphListContainer.setVisibility(View.GONE);
+    newGraphOption.setVisibility(View.VISIBLE);
   }
 
   /**
@@ -56,14 +72,22 @@ public class MainMenuFragment extends Fragment {
   public void openFileViewer(){
     fileViewerOpen = true;
     graphListContainer.setVisibility(View.VISIBLE);
+    newGraphOption.setVisibility(View.GONE);
   }
 
-  public void setGraphs(List<Graph> graphs){
-    this.graphs = graphs;
+  /**
+   * Adds a graph to the list of items to display under the file viewer
+   * @param toAdd The graph object to be added to the display
+   */
+  public void addGraph(Graph toAdd){
+    graphs.add(toAdd);
+
+    if (listAdapter != null){
+      listAdapter.notifyDataSetChanged();
+    }
   }
 
   private void setupButtons(){
-    //TODO setup the open graph button. Get database info from main activity.
     openGraphButton.setOnClickListener((v -> {
       if (!fileViewerOpen){
         openFileViewer();
@@ -71,10 +95,19 @@ public class MainMenuFragment extends Fragment {
         closeFileViewer();
       }
     }));
+    newGraphButton.setOnClickListener((v) -> {
+      controller.openEditorFragment();
+    });
+  }
 
-    newGraphButton.setOnClickListener((v -> {
-      //TODO tell the main activity to switch fragments
+  private void setupAdapter(){
+    listAdapter = new GraphAdapter(getContext().getApplicationContext(), graphs,
+        ViewModelProviders.of(this).get(GraphEditorViewModel.class));
+    listAdapter.setController(controller);
+    graphList.setAdapter(listAdapter);
+  }
 
-    }));
+  public void setController(MainActivity controller){
+    this.controller = controller;
   }
 }

@@ -12,10 +12,6 @@
       android:id="@+id/save_graph_nav"
       android:icon="@drawable/save_graph_icon"
       android:title="Save Graph"/>
-    <item
-      android:id="@+id/open_graph_nav"
-      android:icon="@drawable/open_graph_icon"
-      android:title="Open Graph"/>
   </group>
 
   <item android:title="Navigation">

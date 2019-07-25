@@ -2,6 +2,7 @@ package io.github.asherbearce.graphy.model.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import io.github.asherbearce.graphy.model.CalculatorInput;
@@ -17,4 +18,7 @@ public interface CalculatorInputDao {
 
   @Insert
   Long addCalculatorInput(CalculatorInput input);
+
+  @Delete
+  int delete(CalculatorInput... functions);
 }

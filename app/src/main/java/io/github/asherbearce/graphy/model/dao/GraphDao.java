@@ -15,9 +15,12 @@ public interface GraphDao {
       + "FROM graphs")
   LiveData<List<Graph>> getAll();
 
+  @Query("SELECT * FROM graphs WHERE id = :id")
+  LiveData<Graph> findById(Long id);
+
   @Insert
   Long addGraph(Graph graph);
 
   @Delete
-  int deleta(Graph... graphs);
+  int delete(Graph... graphs);
 }
