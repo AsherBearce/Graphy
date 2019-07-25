@@ -33,5 +33,5 @@ interface that allows you to look at various sections of the graph, most likely 
 ### Milestone 2
 [Milestone 2](docs/milestone-2.md)
 
-###
+### Final Prototype
 [Final prototype](docs/project-doc.md)
