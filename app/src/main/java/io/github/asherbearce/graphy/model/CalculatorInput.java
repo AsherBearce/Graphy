@@ -16,7 +16,7 @@ public class CalculatorInput {
   @ColumnInfo(name = "source")
   private String input;
   @ColumnInfo(name = "function_id")
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   private Long functionId;
 
   @ColumnInfo(name = "graph_id")

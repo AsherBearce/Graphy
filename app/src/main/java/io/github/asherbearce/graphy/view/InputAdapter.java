@@ -3,6 +3,7 @@ package io.github.asherbearce.graphy.view;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
     final EditText input = layout.findViewById(R.id.text_input);
     ImageButton removeButton = layout.findViewById(R.id.remove_item_button);
 
+    Log.d("Trace", item.getInput());
     input.setText(item.getInput());
 
     removeButton.setOnClickListener(
@@ -85,7 +87,10 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
 
           @Override
           public void afterTextChanged(Editable s) {
-            item.setInput(s.toString());
+            if (input.hasFocus()) {
+              Log.d("Trace", "What");
+              item.setInput(s.toString());
+            }
             InputAdapter.this.notifyChange();
           }
         }

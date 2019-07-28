@@ -33,22 +33,9 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    openEditorFragment();
+    openEditorFragment(0);
 
     database = GraphsDatabase.getInstance(getApplication());
-
-    /*LiveData<List<CalculatorInput>> savedState = database.inputDao().getAll();
-
-    savedState.observe(this, new Observer<List<CalculatorInput>>() {
-      @Override
-      public void onChanged(List<CalculatorInput> calculatorInputs) {
-        for (CalculatorInput input : calculatorInputs){
-          inputs.add(input);
-        }
-        adapter.notifyDataSetChanged();
-        adapter.notifyChange();
-      }
-    });*/
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
@@ -66,14 +53,19 @@ public class MainActivity extends AppCompatActivity
   /**
    * Displays the editor fragment.
    */
-  public void openEditorFragment(){
-    if (editor == null){
-      editor = new GraphEditorFragment();
-    }
+  public GraphEditorFragment openEditorFragment(long graphId){
+    //if (editor == null){
+    editor = new GraphEditorFragment();
+    //}
+    Bundle args = new Bundle();
+    args.putLong("graph_id", graphId);
+    editor.setArguments(args);
     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.fragment_placeHolder, editor);
     ft.commit();
     editorOpen = true;
+
+    return editor;
   }
 
   /**
@@ -139,7 +131,7 @@ public class MainActivity extends AppCompatActivity
 
     if (id == R.id.new_graph_nav) {
       if (!editorOpen) {
-        openEditorFragment();
+        openEditorFragment(0);
         menuFragment.closeFileViewer();
       }
     } else if (id == R.id.save_graph_nav) {

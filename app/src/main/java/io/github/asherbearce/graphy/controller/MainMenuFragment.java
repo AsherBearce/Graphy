@@ -30,7 +30,6 @@ public class MainMenuFragment extends Fragment {
   private List<Graph> graphs;
   private boolean fileViewerOpen = false;
   private GraphAdapter listAdapter;
-  private OnClickListener newGraphListener;
   private LinearLayout newGraphOption;
   private MainActivity controller;
   //TODO set the controller field to the main activity.
@@ -96,7 +95,7 @@ public class MainMenuFragment extends Fragment {
       }
     }));
     newGraphButton.setOnClickListener((v) -> {
-      controller.openEditorFragment();
+      controller.openEditorFragment(0);
     });
   }
 

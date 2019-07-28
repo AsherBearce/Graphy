@@ -38,4 +38,10 @@ public interface CalculatorInputDao {
    */
   @Delete
   int delete(CalculatorInput... functions);
+
+  @Query("SELECT * FROM functions WHERE graph_id = :graphId")
+  LiveData<List<CalculatorInput>> getFromGraphId(long graphId);
+
+  @Query("DELETE FROM functions WHERE graph_id = :graphId")
+  void deleteInputsOf(long graphId);
 }

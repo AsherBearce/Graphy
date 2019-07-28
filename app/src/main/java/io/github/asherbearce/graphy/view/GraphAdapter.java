@@ -50,13 +50,15 @@ public class GraphAdapter extends ArrayAdapter<Graph> {
     View view = convertView == null ? LayoutInflater.from(getContext()).inflate(
         R.layout.graph_list_item, parent, false) : convertView;
 
+    Graph graph = contents.get(position);
+
     TextView text = view.findViewById(R.id.graph_text_view);
     ImageButton loadGraphButton = view.findViewById(R.id.select_graph_button);
     text.setText(contents.get(position).name);
 
     loadGraphButton.setOnClickListener(v -> {
-      viewModel.getGraphInputs(getItem(position).id);
-      controller.openEditorFragment();
+      //viewModel.getGraphInputs(getItem(position).id);
+      controller.openEditorFragment(graph.id);//.loadFunctions(graph.id);
     });
 
     return view;

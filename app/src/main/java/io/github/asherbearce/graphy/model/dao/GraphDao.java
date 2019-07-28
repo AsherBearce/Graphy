@@ -46,4 +46,9 @@ public interface GraphDao {
    */
   @Delete
   int delete(Graph... graphs);
+
+  @Query("UPDATE graphs "
+      + "SET name = :newName "
+      + "WHERE id = :id")
+  void updateGraphName(String newName, long id);
 }

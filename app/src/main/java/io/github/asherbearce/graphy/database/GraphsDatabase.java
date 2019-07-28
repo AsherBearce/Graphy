@@ -2,7 +2,6 @@ package io.github.asherbearce.graphy.database;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
@@ -10,14 +9,13 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.*;
-import io.github.asherbearce.graphy.model.dao.CalculatorGraphJoinDao;
 import io.github.asherbearce.graphy.model.dao.CalculatorInputDao;
 import io.github.asherbearce.graphy.model.dao.GraphDao;
 
 /**
  * A singleton class which uses Room to execute database queries
  */
-@Database(entities = {Graph.class, CalculatorInput.class, CalculatorGraphJoin.class}, version = 1)
+@Database(entities = {Graph.class, CalculatorInput.class}, version = 1)
 public abstract class GraphsDatabase extends RoomDatabase {
   private static GraphsDatabase INSTANCE;
 
@@ -32,12 +30,6 @@ public abstract class GraphsDatabase extends RoomDatabase {
    * @return {@link GraphDao}
    */
   public abstract GraphDao graphDao();
-
-  /**
-   * The Dao corresponding to the join table between the graph and calculator inputs.
-   * @return {@link CalculatorGraphJoinDao}
-   */
-  public abstract CalculatorGraphJoinDao calculatorGraphJoinDao();
 
   /**
    * Gets the one instance of a database service
@@ -76,25 +68,22 @@ public abstract class GraphsDatabase extends RoomDatabase {
     @Override
     protected Void doInBackground(Void... voids){
       Graph graph = new Graph();
-      graph.id = 0L;
+      graph.id = 1L;
       graph.name = "Sample";
       db.graphDao().addGraph(graph);
 
       CalculatorInput input = new CalculatorInput();
-      input.setFunctionId(1L);
-      input.setGraphId(0L);
+      input.setGraphId(1L);
       input.setInput("f(x) = sin(x)");
       db.inputDao().addCalculatorInput(input);
 
       input = new CalculatorInput();
-      input.setFunctionId(2L);
-      input.setGraphId(0L);
+      input.setGraphId(1L);
       input.setInput("g(x) = cos(x)");
       db.inputDao().addCalculatorInput(input);
 
       input = new CalculatorInput();
-      input.setFunctionId(3L);
-      input.setGraphId(0L);
+      input.setGraphId(1L);
       input.setInput("h(x) = f(x) + g(x)");
       db.inputDao().addCalculatorInput(input);
 

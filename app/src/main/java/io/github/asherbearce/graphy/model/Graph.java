@@ -12,7 +12,7 @@ public class Graph {
   /**
    * The id of this graph
    */
-  @PrimaryKey
+  @PrimaryKey(autoGenerate = true)
   public Long id;
 
   /**

@@ -17,7 +17,7 @@
     android:layout_width="50dp"
     android:layout_height="50dp"
     android:layout_weight="1"
-    android:src="@drawable/open_graph_icon"
+    android:src="@drawable/delete_item_icon"
     android:layout_margin="5dp"/>
 
   <ImageButton
@@ -25,7 +25,7 @@
     android:layout_width="50dp"
     android:layout_height="50dp"
     android:layout_weight="1"
-    android:src="@drawable/delete_item_icon"
+    android:src="@drawable/open_graph_icon"
     android:layout_margin="5dp"/>
 
 </LinearLayout>
