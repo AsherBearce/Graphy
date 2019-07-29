@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import io.github.asherbearce.graphy.model.Graph;
 import java.util.List;
@@ -36,7 +37,7 @@ public interface GraphDao {
    * @param graph The graph to be added to the database
    * @return {@link Long}
    */
-  @Insert
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   Long addGraph(Graph graph);
 
   /**
@@ -46,9 +47,4 @@ public interface GraphDao {
    */
   @Delete
   int delete(Graph... graphs);
-
-  @Query("UPDATE graphs "
-      + "SET name = :newName "
-      + "WHERE id = :id")
-  void updateGraphName(String newName, long id);
 }

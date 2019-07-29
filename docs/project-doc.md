@@ -8,7 +8,7 @@ supports a few transcendental functions, such as sin, cos, and tan. It also supp
 and log base 10. More excitingly, it supports taking derivatives of functions, and even partial derivatives
 of multi-variable functions. 
 
-It should also be noted that the editor may crash upon certain invalid inputs. 
+Saving and loading graphs is now possible as well. 
 
 # How to use the app
 Upon first start, the user should be greeted by the editor screen. There will be a plus button located
@@ -25,7 +25,9 @@ For example "derivative(f(x), x, x)" will parse correctly. To delete an input, t
 next to each input, tap it to remove your input. To get to the file navigation screen (which does not
 currently function correctly), swipe to the right and click on the "Main Menu" option in the navigation
 drawer. To get back to the editor, either open the the file from the "Open File" option, or choose
-"new graph" in the navigation drawer.
+"new graph" in the navigation drawer. To save a graph, open the navigation drawer and tap on "save graph"
+To load a graph, tap on the "Open graph" option in the main menu, a list of graphs should then appear
+and you may select the graph you want to load. 
 
 # Documentation For this app
 * [Entity relationship diagrams](ERD.md)

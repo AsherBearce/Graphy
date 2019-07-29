@@ -79,7 +79,6 @@ public class GraphEditorFragment extends Fragment {
       functions.clear();
       functions.addAll(calculatorInputs);
       adapter.notifyDataSetInvalidated();
-      //adapter.notifyChange();
     });
 
     viewModel.getGraph().observe(this, graph -> {
@@ -109,6 +108,14 @@ public class GraphEditorFragment extends Fragment {
    */
   public List<CalculatorInput> getFunctions() {
     return functions;
+  }
+
+  /**
+   * Returns the current name of the graph being edited.
+   * @return
+   */
+  public String getGraphName(){
+    return graphNameDisplay.getText().toString();
   }
 
   private void setupAdapter(Context context){

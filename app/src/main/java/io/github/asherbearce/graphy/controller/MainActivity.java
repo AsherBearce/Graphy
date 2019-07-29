@@ -3,6 +3,7 @@ package io.github.asherbearce.graphy.controller;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,10 +12,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.navigation.NavigationView;
 import io.github.asherbearce.graphy.R;
 import io.github.asherbearce.graphy.database.GraphsDatabase;
+import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.Graph;
+import io.github.asherbearce.graphy.viewmodel.GraphEditorViewModel;
 import java.util.List;
 
 /**
@@ -76,16 +80,6 @@ public class MainActivity extends AppCompatActivity
       menuFragment = new MainMenuFragment();
       menuFragment.setController(this);
     }
-    LiveData<List<Graph>> graphs = database.graphDao().getAll();
-
-    graphs.observe(this, new Observer<List<Graph>>() {
-      @Override
-      public void onChanged(List<Graph> graphs) {
-        for (Graph graph : graphs){
-          menuFragment.addGraph(graph);
-        }
-      }
-    });
 
     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.fragment_placeHolder, menuFragment);
@@ -130,14 +124,22 @@ public class MainActivity extends AppCompatActivity
     int id = item.getItemId();
 
     if (id == R.id.new_graph_nav) {
-      if (!editorOpen) {
-        openEditorFragment(0);
-        menuFragment.closeFileViewer();
-      }
+      menuFragment.closeFileViewer();
+      openEditorFragment(0);
     } else if (id == R.id.save_graph_nav) {
       if (editorOpen){
         //TODO save this graph to the database.
-
+        String graphName = editor.getGraphName();
+        if (!graphName.isEmpty()) {
+          List<CalculatorInput> functions = editor.getFunctions();
+          Graph graph = new Graph();
+          graph.name = graphName;
+          GraphEditorViewModel viewModel = ViewModelProviders.of(this).get(GraphEditorViewModel.class);
+          viewModel.addGraphWithFunctions(graph, functions);
+        }
+        else{
+          Toast.makeText(getApplicationContext(), "You must name your graph", Toast.LENGTH_SHORT);
+        }
       }
     } else if (id == R.id.nav_main_menu) {
       if (editorOpen) {

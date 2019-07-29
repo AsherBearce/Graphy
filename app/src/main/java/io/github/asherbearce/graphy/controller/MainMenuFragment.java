@@ -13,8 +13,10 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import io.github.asherbearce.graphy.R;
+import io.github.asherbearce.graphy.database.GraphsDatabase;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import io.github.asherbearce.graphy.model.Graph;
 import io.github.asherbearce.graphy.view.GraphAdapter;
@@ -48,6 +50,14 @@ public class MainMenuFragment extends Fragment {
     graphListContainer = fragment.findViewById(R.id.list_container);
     graphList = fragment.findViewById(R.id.graphs_list);
     newGraphOption = fragment.findViewById(R.id.new_graph_option);
+
+    LiveData<List<Graph>> graphQuery = GraphsDatabase.getInstance(getContext()).graphDao().getAll();
+
+    graphQuery.observe(this, graphList -> {
+      graphs.clear();
+      graphs.addAll(graphList);
+      listAdapter.notifyDataSetChanged();
+    });
 
     setupButtons();
     setupAdapter();

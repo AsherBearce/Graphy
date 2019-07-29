@@ -46,8 +46,40 @@ public class GraphEditorViewModel extends AndroidViewModel {
     new Thread(() -> db.graphDao().addGraph(graph)).start();
   }
 
+  /**
+   * Adds a new function to the database
+   * @param input The function to be added
+   */
   public void addFunction(final CalculatorInput input){
     new Thread(() -> db.inputDao().addCalculatorInput(input)).start();
+  }
+
+  /**
+   * Adds a graph as well as it's associated functions to the database
+   * @param graph The graph to be added
+   * @param inputs The functions to be added
+   */
+  public void addGraphWithFunctions(final Graph graph, final List<CalculatorInput> inputs){
+    new Thread(() -> {
+
+      Long id = db.graphDao().addGraph(graph);
+      for (CalculatorInput input : inputs){
+        input.setGraphId(id);
+        db.inputDao().addCalculatorInput(input);
+      }
+    }).start();
+  }
+
+  /**
+   * Deletes all functions and graph with a certain graph id from the database
+   * @param graph The graph to be deleted
+   */
+  public void deleteGraph(Graph graph){
+    new Thread(() -> {
+      Long id = graph.id;
+      db.inputDao().deleteInputsOf(id);
+      db.graphDao().delete(graph);
+    }).start();
   }
 
   /**

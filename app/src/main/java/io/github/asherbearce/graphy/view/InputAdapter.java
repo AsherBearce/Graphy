@@ -62,7 +62,6 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
     final EditText input = layout.findViewById(R.id.text_input);
     ImageButton removeButton = layout.findViewById(R.id.remove_item_button);
 
-    Log.d("Trace", item.getInput());
     input.setText(item.getInput());
 
     removeButton.setOnClickListener(
@@ -88,7 +87,6 @@ public class InputAdapter extends ArrayAdapter<CalculatorInput> {
           @Override
           public void afterTextChanged(Editable s) {
             if (input.hasFocus()) {
-              Log.d("Trace", "What");
               item.setInput(s.toString());
             }
             InputAdapter.this.notifyChange();

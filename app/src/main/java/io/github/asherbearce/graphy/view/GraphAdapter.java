@@ -54,11 +54,15 @@ public class GraphAdapter extends ArrayAdapter<Graph> {
 
     TextView text = view.findViewById(R.id.graph_text_view);
     ImageButton loadGraphButton = view.findViewById(R.id.select_graph_button);
+    ImageButton removeGraphButton = view.findViewById(R.id.delete_graph_button);
     text.setText(contents.get(position).name);
 
     loadGraphButton.setOnClickListener(v -> {
-      //viewModel.getGraphInputs(getItem(position).id);
       controller.openEditorFragment(graph.id);//.loadFunctions(graph.id);
+    });
+
+    removeGraphButton.setOnClickListener(v -> {
+      viewModel.deleteGraph(graph);
     });
 
     return view;

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import io.github.asherbearce.graphy.model.CalculatorInput;
 import java.util.List;
@@ -28,7 +29,7 @@ public interface CalculatorInputDao {
    * @param input The input to be added to the database
    * @return {@link Long}
    */
-  @Insert
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
   Long addCalculatorInput(CalculatorInput input);
 
   /**
@@ -39,9 +40,18 @@ public interface CalculatorInputDao {
   @Delete
   int delete(CalculatorInput... functions);
 
+  /**
+   * Returns all the functions associated with a graph id
+   * @param graphId The id of the graph
+   * @return LiveData
+   */
   @Query("SELECT * FROM functions WHERE graph_id = :graphId")
   LiveData<List<CalculatorInput>> getFromGraphId(long graphId);
 
+  /**
+   * Deletes all functions associated with a graphid
+   * @param graphId The id of the graph
+   */
   @Query("DELETE FROM functions WHERE graph_id = :graphId")
   void deleteInputsOf(long graphId);
 }
